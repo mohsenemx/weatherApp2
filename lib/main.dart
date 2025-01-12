@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:weatherapp2/data/api.dart';
+import 'package:weatherapp2/data/classes.dart';
 
-void main() {
+void main() async {
+  Weather? a = await getWeather('Sari');
+  print(a);
   runApp(const MyApp());
 }
 
