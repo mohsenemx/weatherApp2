@@ -1,16 +1,34 @@
+// ignore_for_file: prefer_initializing_formals
 class Weather {
+  double temperature;
+  String state;
+  double feelsLike;
+  double? preasure;
+  double? humidity;
+  double? chanceOfRain;
+  int lastUpdated;
+  City city;
   Weather(
-      {required double temperature,
-      required String state,
-      required double feelsLike,
-      required lastUpdated,
-      preasure,
-      humidity,
-      chanceOfRain});
+      {required this.temperature,
+      required this.state,
+      required this.feelsLike,
+      required this.lastUpdated,
+      required this.city,
+      this.preasure,
+      this.humidity,
+      this.chanceOfRain});
 }
 
-class Coordinate {
-  Coordinate({required double lat, required double lon});
+class City {
+  double lat;
+  double lon;
+  String name;
+  String country;
+  City(
+      {required this.lat,
+      required this.lon,
+      required this.name,
+      required this.country});
 }
 
 // Handling errors
