@@ -21,17 +21,8 @@ Future<Weather>? parseStorage() async {
   if ((raw?.isEmpty ?? true) || (rawLocation?.isEmpty ?? true)) {
     throw NoDataException();
   }
-  City city = City(
-      lat: double.parse(rawLocation![0]),
-      lon: double.parse(rawLocation[1]),
-      name: rawLocation[2],
-      country: rawLocation[3]);
-  Weather lWeather = Weather(
-      temperature: double.parse(raw![0]),
-      state: raw[1],
-      feelsLike: double.parse(raw[2]),
-      lastUpdated: int.parse(raw[3]),
-      city: city);
+  City city = City.fromList(rawLocation!);
+  Weather lWeather = Weather.fromList(raw!, city);
   return lWeather;
 }
 
@@ -46,12 +37,7 @@ Future<void> saveStorage() async {
       weather!.chanceOfRain.toString(),
       weather!.preasure.toString()
     ];
-    List<String> cityData = [
-      weather!.city.lat.toString(),
-      weather!.city.lon.toString(),
-      weather!.city.name,
-      weather!.city.country,
-    ];
+    List<String> cityData = City.toList(weather!.city);
     await prefs.setStringList('lastWeather', data);
     await prefs.setStringList('locationData', cityData);
   }
