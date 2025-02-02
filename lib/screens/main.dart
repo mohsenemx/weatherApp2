@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:weatherapp22/main.dart';
 
 class Main extends StatefulWidget {
   const Main({super.key});
@@ -16,7 +15,7 @@ class _MainState extends State<Main> {
         child: SingleChildScrollView(
           // ignore: avoid_unnecessary_containers
           child: Container(
-            child: Text(weather?.state ?? ''),
+            child: Icon(Icons.abc),
           ),
         ),
       ),

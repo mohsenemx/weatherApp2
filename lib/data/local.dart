@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 import 'package:weatherapp22/data/classes.dart';
 import 'package:weatherapp22/main.dart';
 
@@ -40,5 +41,14 @@ Future<void> saveStorage() async {
     List<String> cityData = City.toList(weather!.city);
     await prefs.setStringList('lastWeather', data);
     await prefs.setStringList('locationData', cityData);
+  }
+}
+
+IconData getIconFromString({String iconName = 'Clear'}) {
+  switch (iconName) {
+    case 'Clear':
+      return Icons.clear;
+    default:
+      return Icons.abc;
   }
 }
