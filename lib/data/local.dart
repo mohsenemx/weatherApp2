@@ -2,6 +2,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:weatherapp22/data/classes.dart';
 import 'package:weatherapp22/main.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dart:convert';
 
 String appVer = 'V0.1';
 String changes = '''
@@ -16,39 +18,46 @@ void initStorage() async {
   }
 }
 
-Future<Weather>? parseStorage() async {
-  List<String>? raw = await prefs.getStringList('lastWeather');
-  List<String>? rawLocation = await prefs.getStringList('locationData');
-  if ((raw?.isEmpty ?? true) || (rawLocation?.isEmpty ?? true)) {
-    throw NoDataException();
-  }
-  City city = City.fromList(rawLocation!);
-  Weather lWeather = Weather.fromList(raw!, city);
-  return lWeather;
+Future<Weather> parseStorage() async {
+  String? raw = await prefs.getString('lastWeather');
+  if (raw == null) throw NoDataException();
+
+  Map<String, dynamic> jsonData = jsonDecode(raw);
+  return Weather.fromJson(jsonData);
 }
 
 Future<void> saveStorage() async {
   if (weather != null) {
-    List<String> data = [
-      weather!.temperature.toString(),
-      weather!.state,
-      weather!.feelsLike.toString(),
-      weather!.lastUpdated.toString(),
-      weather!.humidity.toString(),
-      weather!.chanceOfRain.toString(),
-      weather!.preasure.toString()
-    ];
-    List<String> cityData = City.toList(weather!.city);
-    await prefs.setStringList('lastWeather', data);
-    await prefs.setStringList('locationData', cityData);
+    String jsonWeather = jsonEncode(weather!.toJson());
+    await prefs.setString('lastWeather', jsonWeather);
   }
 }
 
-IconData getIconFromString({String iconName = 'Clear'}) {
+IconData getIconFromString({String? iconName = 'Clear'}) {
   switch (iconName) {
+    case 'Clouds':
+      return Icons.cloud;
+    case 'Rain':
+      return FontAwesomeIcons.cloudRain;
+    case 'Snow':
+      return Icons.ac_unit;
+    case 'Thunderstorm':
+      return Icons.flash_on;
+    case 'Drizzle':
+      return Icons.grain;
+    case 'Mist':
+    case 'Smoke':
+    case 'Haze':
+    case 'Dust':
+    case 'Fog':
+    case 'Sand':
+    case 'Ash':
+      return Icons.blur_on;
+    case 'Squall':
+    case 'Tornado':
+      return Icons.waves;
     case 'Clear':
-      return Icons.clear;
     default:
-      return Icons.abc;
+      return Icons.wb_sunny;
   }
 }

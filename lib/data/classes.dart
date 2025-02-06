@@ -1,46 +1,53 @@
 // ignore_for_file: prefer_initializing_formals
+import 'package:flutter/material.dart';
+
 class Weather {
   double temperature;
   String state;
   double feelsLike;
-  double? preasure;
+  double? pressure;
   double? humidity;
   double? chanceOfRain;
   int lastUpdated;
   City city;
-  Weather(
-      {required this.temperature,
-      required this.state,
-      required this.feelsLike,
-      required this.lastUpdated,
-      required this.city,
-      this.preasure,
-      this.humidity,
-      this.chanceOfRain});
-  // Convert a Weather object to a string array
-  static List<String> toList(Weather weather) {
-    return [
-      weather.temperature.toString(),
-      weather.state,
-      weather.feelsLike.toString(),
-      weather.lastUpdated.toString(),
-      weather.humidity.toString(),
-      weather.chanceOfRain.toString(),
-      weather.preasure.toString()
-    ];
+
+  Weather({
+    required this.temperature,
+    required this.state,
+    required this.feelsLike,
+    required this.lastUpdated,
+    required this.city,
+    this.pressure,
+    this.humidity,
+    this.chanceOfRain,
+  });
+
+  // Convert Weather object to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'temperature': temperature,
+      'state': state,
+      'feelsLike': feelsLike,
+      'lastUpdated': lastUpdated,
+      'humidity': humidity,
+      'chanceOfRain': chanceOfRain,
+      'pressure': pressure,
+      'city': city.toJson(),
+    };
   }
 
-  // Convert a string array to a Weather object
-  factory Weather.fromList(List<String> data, City city) {
+  // Create a Weather object from JSON
+  factory Weather.fromJson(Map<String, dynamic> json) {
     return Weather(
-        temperature: double.parse(data[0]),
-        state: data[1],
-        feelsLike: double.parse(data[2]),
-        lastUpdated: int.parse(data[3]),
-        humidity: double.tryParse(data[4]),
-        chanceOfRain: double.tryParse(data[5]),
-        preasure: double.tryParse(data[6]),
-        city: city);
+      temperature: json['temperature'],
+      state: json['state'],
+      feelsLike: json['feelsLike'],
+      lastUpdated: json['lastUpdated'],
+      humidity: json['humidity'],
+      chanceOfRain: json['chanceOfRain'],
+      pressure: json['pressure'],
+      city: City.fromJson(json['city']),
+    );
   }
 }
 
@@ -49,29 +56,41 @@ class City {
   double lon;
   String name;
   String country;
-  City(
-      {required this.lat,
-      required this.lon,
-      required this.name,
-      required this.country});
-  // Convert a City object to a string array
-  static List<String> toList(City city) {
-    return [
-      city.lat.toString(),
-      city.lon.toString(),
-      city.name,
-      city.country,
-    ];
+
+  City({
+    required this.lat,
+    required this.lon,
+    required this.name,
+    required this.country,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'lat': lat,
+      'lon': lon,
+      'name': name,
+      'country': country,
+    };
   }
 
-  // Convert a string array to a City object
-  factory City.fromList(List<String> data) {
+  factory City.fromJson(Map<String, dynamic> json) {
     return City(
-      lat: double.parse(data[0]),
-      lon: double.parse(data[1]),
-      name: data[2],
-      country: data[3],
+      lat: json['lat'],
+      lon: json['lon'],
+      name: json['name'],
+      country: json['country'],
     );
+  }
+}
+
+class WeatherProvider with ChangeNotifier {
+  Weather? _currentWeather;
+
+  Weather? get currentWeather => _currentWeather;
+
+  void updateWeather(Weather newWeather) {
+    _currentWeather = newWeather;
+    notifyListeners(); // Notify UI to rebuild
   }
 }
 

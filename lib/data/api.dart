@@ -12,6 +12,7 @@ Future<Weather?> getWeather(City city) async {
   try {
     var response = await http.get(url);
     if (response.statusCode == 200) {
+      print('Got weather!');
       var jsonResponse =
           convert.jsonDecode(response.body) as Map<String, dynamic>;
       double? temp = jsonResponse['main']['temp'];
