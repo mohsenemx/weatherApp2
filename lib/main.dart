@@ -5,7 +5,7 @@ import 'package:weatherapp22/data/classes.dart';
 import 'package:weatherapp22/data/local.dart';
 import 'package:weatherapp22/screens/main.dart';
 
-Weather? weather;
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   initStorage();
@@ -24,6 +24,7 @@ class WeatherApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       home: Main(),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:weatherapp22/data/classes.dart';
@@ -18,17 +19,23 @@ void initStorage() async {
   }
 }
 
-Future<Weather> parseStorage() async {
+Future<void> parseStorage() async {
   String? raw = await prefs.getString('lastWeather');
   if (raw == null) throw NoDataException();
 
   Map<String, dynamic> jsonData = jsonDecode(raw);
-  return Weather.fromJson(jsonData);
+
+  // Use the globally accessible context to get WeatherProvider
+  final weatherProvider = navigatorKey.currentContext!.read<WeatherProvider>();
+
+  weatherProvider.updateWeather(Weather.fromJson(jsonData));
 }
 
 Future<void> saveStorage() async {
+  final weatherProvider = navigatorKey.currentContext!.read<WeatherProvider>();
+  final weather = weatherProvider.currentWeather;
   if (weather != null) {
-    String jsonWeather = jsonEncode(weather!.toJson());
+    String jsonWeather = jsonEncode(weather.toJson());
     await prefs.setString('lastWeather', jsonWeather);
   }
 }

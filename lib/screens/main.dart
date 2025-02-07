@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:weatherapp22/data/api.dart';
 import 'package:weatherapp22/data/classes.dart';
 import 'package:weatherapp22/widgets/main_weather.dart';
+import 'package:weatherapp22/widgets/search.dart';
+import 'package:weatherapp22/widgets/time_details.dart';
+import 'package:weatherapp22/widgets/weather_details.dart'; // New widget for details
 
 class Main extends StatefulWidget {
   const Main({super.key});
@@ -21,44 +24,65 @@ class _MainState extends State<Main> {
   }
 
   Future<void> _refreshWeather() async {
+    final weatherProvider =
+        Provider.of<WeatherProvider>(context, listen: false);
+    final Weather? currentWeather = weatherProvider.currentWeather;
     Weather? newWeather = await getWeather(
-      City(country: 'IR', name: 'Sari', lat: 1, lon: 1),
+      currentWeather?.city ?? City.empty(),
     );
 
     if (!mounted) return;
 
-    Provider.of<WeatherProvider>(context, listen: false)
-        .updateWeather(newWeather!);
+    weatherProvider.updateWeather(newWeather ?? Weather.empty());
 
     setState(() {
-      _isLoading = false; // Stop loading after fetching weather
+      _isLoading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    Weather? weather = Provider.of<WeatherProvider>(context).currentWeather;
+    final weatherProvider = Provider.of<WeatherProvider>(context);
+    final weather = weatherProvider.currentWeather;
 
     return Scaffold(
-      backgroundColor: Colors.red,
+      backgroundColor: Colors.blueGrey[900],
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _refreshWeather,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            child: Container(
-              height: MediaQuery.of(context).size.height,
-              width: double.infinity,
-              alignment: Alignment.center,
-              padding: const EdgeInsets.only(top: 50),
-              child: _isLoading || weather == null
-                  ? const CircularProgressIndicator() // Show loading if data isn't ready
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        MainWeather(useFahrenheit: false),
-                      ],
-                    ),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 20),
+                  Text(
+                    weather?.city.name ?? "Fetching Location...",
+                    style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                  const SizedBox(height: 10),
+                  _isLoading || weather == null
+                      ? const CircularProgressIndicator()
+                      : Column(
+                          children: [
+                            MainWeather(useFahrenheit: false),
+                            WeatherDetails(
+                                weather: weather), // Weather details widget
+                            TimeDetails(weather: weather),
+                            const SizedBox(height: 20),
+                            SearchWidget(onCitySelected: (City selectedCity) {
+                              weatherProvider.updateCity(selectedCity);
+                            }),
+                          ],
+                        ),
+                ],
+              ),
             ),
           ),
         ),

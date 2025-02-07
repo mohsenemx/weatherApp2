@@ -12,20 +12,40 @@ Future<Weather?> getWeather(City city) async {
   try {
     var response = await http.get(url);
     if (response.statusCode == 200) {
-      print('Got weather!');
+      print('Got weather! for ${city.name}');
       var jsonResponse =
           convert.jsonDecode(response.body) as Map<String, dynamic>;
       double? temp = jsonResponse['main']['temp'];
       double? feelsLike = jsonResponse['main']['feels_like'];
       String? main = jsonResponse['weather'][0]['main'];
+      double? pressure = jsonResponse['main']['feels_like'];
+      double? humidity = jsonResponse['main']['feels_like'];
+      double? windSpeed = jsonResponse['wind']['speed'];
+      int? windDeg = jsonResponse['wind']['deg'];
+      double? chanceOfRain = jsonResponse['rain']['1h'];
+      int? sunset = jsonResponse['sys']['sunset'];
+      int? sunrise = jsonResponse['sys']['sunrise'];
+      double? tempMin = jsonResponse['main']['temp_min'];
+      double? tempMax = jsonResponse['main']['temp_max'];
+      int? dt = jsonResponse['dt'];
       return Weather(
-          temperature: temp ?? -1,
-          state: main ?? 'E',
-          feelsLike: feelsLike ?? -1,
-          lastUpdated: 0,
+          temperature: temp ?? -1000,
+          state: main ?? '',
+          feelsLike: feelsLike ?? -1000,
+          lastUpdated: dt ?? 0,
+          chanceOfRain: chanceOfRain,
+          humidity: humidity,
+          pressure: pressure,
+          tempMax: tempMax,
+          tempMin: tempMin,
+          windSpeed: windSpeed,
+          windDeg: windDeg,
+          sunset: sunset ?? 0,
+          sunrise: sunrise ?? 0,
           city: city);
     } else {
-      print('Request failed with status: ${response.statusCode}.');
+      print(
+          'Request failed with status: ${response.statusCode}, for city: ${city.name}.');
     }
   } catch (e) {
     print('Request failed with status: $e.');
